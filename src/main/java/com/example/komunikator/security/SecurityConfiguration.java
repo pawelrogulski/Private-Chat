@@ -11,10 +11,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().and().headers().frameOptions().sameOrigin().and().
+                authorizeRequests()
                 .mvcMatchers("/add_friend","/conversation/**").hasRole("USER")
                 .mvcMatchers("/","/register","/login").permitAll()
-                .and().formLogin().loginPage("/login").defaultSuccessUrl("/");;
+                .and().formLogin().loginPage("/login").defaultSuccessUrl("/");
+
         return http.build();
     }
     @Autowired
