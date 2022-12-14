@@ -29,14 +29,14 @@ public class AppController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
-    @MessageMapping("/hello")
+    @MessageMapping("/chat")
     public void send(SimpMessageHeaderAccessor sha, @Payload String recipientAndMessage, Principal principal) {
         String sendFrom = principal.getName();
         int space = recipientAndMessage.indexOf(" ");
         String sendTo = recipientAndMessage.substring(0,space);
         String message = recipientAndMessage.substring(space+1,recipientAndMessage.length());
         int conversationId = appService.findConversation(appService.getUserByUsername(sendFrom).getId(),appService.getUserByUsername(sendTo).getId());
-        appService.addMessage(recipientAndMessage,appService.getUserByUsername(sendFrom).getId(),conversationId);
+        appService.addMessage(message,appService.getUserByUsername(sendFrom).getId(),conversationId);
         simpMessagingTemplate.convertAndSendToUser(sendTo, "/queue/messages", sendFrom+": "+message);
     }
 
@@ -89,7 +89,7 @@ public class AppController {
         int conversationId = appService.startConversaton(appService.getUserByUsername(username).getId(),idInt);
         String message = "";
         model.addAttribute("conversation", appService.sortMessages(appService.getConversationById(conversationId)));
-        model.addAttribute("chatWith", appService.getUserById(idInt).getUsername());
+        model.addAttribute("recipient", appService.getUserById(idInt).getUsername());
         model.addAttribute("newMessage", message);
         model.addAttribute("username",username);
         return "/conversation";
