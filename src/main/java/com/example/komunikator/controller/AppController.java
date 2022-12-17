@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -60,16 +61,22 @@ public class AppController {
     public String usersList(Model model){
         List<User> users = appService.getAllUsers();
         List<User> usersWithoutMe = new ArrayList<>();
-        String username = "";
+        String username;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof MyUserDetails) {username = ((MyUserDetails)principal).getUsername();}
-        else {username = principal.toString();}
+        else {username = "";}
         for(User user : users){
             if(!user.getUsername().equals(username)){
                 usersWithoutMe.add(user);
             }
         }
+        List<User> usersWithoutMe2 = users.stream()
+                .filter(user -> !user.getUsername().equals(username))
+                        .collect(Collectors.toList());
         model.addAttribute("users", usersWithoutMe);
+        if(usersWithoutMe.equals(usersWithoutMe2)){
+            System.out.println("git jest");
+        }
         return "add_friend";
     }
 
@@ -78,7 +85,6 @@ public class AppController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
         if (principal instanceof MyUserDetails) {username = ((MyUserDetails)principal).getUsername();}
-        else {username = principal.toString();}
         int idInt =0;
         if(id.matches("[0-9]+")){
             idInt = Integer.parseInt(id);

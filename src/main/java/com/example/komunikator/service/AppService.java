@@ -26,7 +26,7 @@ public class AppService {
 
 
     public Role addRole(String role){
-        String[] possibleRoles = {"ROLE_ADMIN", "ROLE_USER"};
+        String[] possibleRoles = {"ROLE_USER"};
         if(!Arrays.asList(possibleRoles).contains(role)){
             throw new IllegalStateException("Niezaimplementowana rola");
         }
